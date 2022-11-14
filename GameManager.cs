@@ -83,6 +83,7 @@ public class GameManager : MonoBehaviourPunCallbacks
         ONLINE = false;
         online_num = 0;
         online_wait = false;
+        start_ini = false;
         BattleManager.instance.Restart();
         turn_count = 0;
         turn_flag = 0;
@@ -114,16 +115,26 @@ public class GameManager : MonoBehaviourPunCallbacks
             entry_deck[i] = entry_deck[j]; // ランダム要素を一番最後にいれる
             entry_deck[j] = temps; // 仮確保を元ランダム要素に上書き
         }
-        if (P.initiative)
-        {
-            E.initiative = false;
-        }
-        else
-        {
-            E.initiative = true;
-        }
+
         if (ONLINE == false)
         {
+            int num = Random.Range(0, 2);
+            if (num == 0)
+            {
+                P.initiative = true;
+            }
+            else
+            {
+                P.initiative = false;
+            }
+            if (P.initiative)
+            {
+                E.initiative = false;
+            }
+            else
+            {
+                E.initiative = true;
+            }
             //デッキ生成と手札を同時に行う
             E.Deck_create(entry_deck);
         }
@@ -133,6 +144,7 @@ public class GameManager : MonoBehaviourPunCallbacks
             SendName_and_Data(my_name, entry_deck);
             player_name.text = my_name;
         }
+
         P.Deck_create(entry_deck);
         P.hp = 4;
         P.mp = 1;

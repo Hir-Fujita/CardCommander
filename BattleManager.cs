@@ -136,8 +136,8 @@ public class BattleManager : MonoBehaviour
         Player P = p.transform.GetComponent<Player>();
         Player E = e.transform.GetComponent<Player>();
         StartCoroutine(Turn_start());//ターン描写のエフェクト
+        Initiative_move("");
         GameManager.turn_count = GameManager.turn_count + 1;
-        Initiative_move();
         if (GameManager.turn_count > 1)
         {
             P.Draw();
@@ -213,21 +213,50 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    void Initiative_move()
+    public void Initiative_move(string lose)
     {
         Player P = p.transform.GetComponent<Player>();
         Player E = e.transform.GetComponent<Player>();
-        if (P.initiative)//イニシアチブの表示
+        if (lose == "player")
         {
             player_ini.SetActive(true);
             enemy_ini.SetActive(false);
+            P.initiative = true;
             E.initiative = false;
+        }
+        else if (lose == "enemy")
+        {
+            P.initiative = false;
+            E.initiative = true;
+        }
+        else if (lose == "move")
+        {
+            if (P.initiative)//イニシアチブの表示
+            {
+                P.initiative = false;
+                E.initiative = true;
+            }
+            else
+            {
+                P.initiative = true;
+                E.initiative = false;
+            }
+        }
+        if (P.initiative)
+        {
+            player_ini.SetActive(true);
         }
         else
         {
             player_ini.SetActive(false);
+        }
+        if (E.initiative)
+        {
             enemy_ini.SetActive(true);
-            E.initiative = true;
+        }
+        else
+        {
+            enemy_ini.SetActive(false);
         }
     }
 
@@ -426,11 +455,6 @@ public class BattleManager : MonoBehaviour
         Start_turn();
     }
 
-    void win_lose_system()
-    {
-
-    }
-
     IEnumerator field_move()
     {
         GameObject p_use = GameObject.FindWithTag("use");//プレイヤーが使用したカード取得
@@ -563,7 +587,7 @@ public class BattleManager : MonoBehaviour
             }
             else
             {
-                P.initiative = false;
+                Initiative_move("enemy");
                 yield return StartCoroutine(Judge("WIN"));
                 if (player_result_process.text != "")
                 {
@@ -594,7 +618,7 @@ public class BattleManager : MonoBehaviour
             }
             else
             {
-                P.initiative = true;
+                Initiative_move("player");
                 yield return StartCoroutine(Judge("LOSE"));
                 if (enemy_result_process.text != "")
                 {
@@ -888,7 +912,7 @@ public class BattleManager : MonoBehaviour
                     E.trash.Add(e_cc.model.cardID);
                     Destroy(e_card);
                     E.hp = E.hp - 1;
-                    P.initiative = false;
+                    Initiative_move("enemy");
                     field_reset("enemy");
                 }
                 else if (enemy_hp_var.text != "0" && hp_var.text == "0") // 負け
@@ -936,7 +960,7 @@ public class BattleManager : MonoBehaviour
                     P.trash.Add(p_cc.model.cardID);
                     Destroy(p_card);
                     P.hp = P.hp - 1;
-                    P.initiative = true;
+                    Initiative_move("player");
                     field_reset("player");
                 }
                 else if (enemy_hp_var.text == "0" && hp_var.text == "0")//引き分け
@@ -1054,7 +1078,7 @@ public class BattleManager : MonoBehaviour
         return false;
     }
 
-    void field_reset(string human)
+    public void field_reset(string human)
     {
         if (human == "player")
         {

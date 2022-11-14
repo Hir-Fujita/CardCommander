@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 
 //カードのクリックを制御するクラス
 
-public class CardMovement : MonoBehaviour,IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler //IDragHandler, IBeginDragHandler, IEndDragHandler
+public class CardMovement : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler //IDragHandler, IBeginDragHandler, IEndDragHandler
 {
     public Transform cardParent;
 
@@ -65,11 +65,11 @@ public class CardMovement : MonoBehaviour,IPointerClickHandler, IPointerEnterHan
                         if (c.model.name == "赤ドラゴン")
                         {
                             int count = 0;
-                            foreach(int i in p.hand)
+                            foreach (int i in p.hand)
                             {
                                 if (i == 108)
                                 {
-                                    count = count +1;
+                                    count = count + 1;
                                 }
                             }
                             if (c.model.cost - count <= p.mp)
@@ -83,7 +83,7 @@ public class CardMovement : MonoBehaviour,IPointerClickHandler, IPointerEnterHan
                 }
             }
         }
-        else if (GameManager.turn_flag ==2)
+        else if (GameManager.turn_flag == 2)
         {
             if (GameManager.flag == "field")
             {
@@ -93,11 +93,11 @@ public class CardMovement : MonoBehaviour,IPointerClickHandler, IPointerEnterHan
                     {
                         if (transform.parent.name == "p1_field")
                         {
-                            GameManager.instance.SendCard(1,"select");
+                            GameManager.instance.SendCard(1, "select");
                         }
-                        else if(transform.parent.name == "p2_field")
+                        else if (transform.parent.name == "p2_field")
                         {
-                            GameManager.instance.SendCard(0,"select");
+                            GameManager.instance.SendCard(0, "select");
                         }
                     }
                     GameManager.obj = transform.gameObject;
@@ -115,7 +115,7 @@ public class CardMovement : MonoBehaviour,IPointerClickHandler, IPointerEnterHan
                         {
                             if (objs[i].gameObject == transform.gameObject)
                             {
-                                GameManager.instance.SendCard(i,"select");
+                                GameManager.instance.SendCard(i, "select");
                                 break;
                             }
                         }
@@ -133,14 +133,44 @@ public class CardMovement : MonoBehaviour,IPointerClickHandler, IPointerEnterHan
                     if (GameManager.ONLINE)
                     {
                         CardController cc = GameManager.obj.GetComponent<CardController>();
-                        GameManager.instance.SendCard(cc.model.cardID,"select");
+                        GameManager.instance.SendCard(cc.model.cardID, "select");
+                    }
+                }
+            }
+            if (GameManager.flag == "field_blue_219")//ウミガメ使用時の処理
+            {
+                if (transform.parent.name == "p1_field")
+                {
+                    int num = int.Parse(BattleManager.instance.lv_var.text);
+                    if (num < 2)
+                    {
+                        if (GameManager.ONLINE)
+                        {
+                            GameManager.instance.SendCard(1, "select");
+                        }
+                        GameManager.obj = transform.gameObject;
+                        GameManager.flag = "wait";
+                    }
+                }
+                if (transform.parent.name == "p2_field")
+                {
+                    int num = int.Parse(BattleManager.instance.enemy_lv_var.text);
+                    if (num < 2)
+                    {
+                        if (GameManager.ONLINE)
+                        {
+                            GameManager.instance.SendCard(0, "select");
+                        }
+                        GameManager.obj = transform.gameObject;
+                        GameManager.flag = "wait";
                     }
                 }
             }
         }
     }
 
-    public void OnPointerEnter(PointerEventData eventData) {
+    public void OnPointerEnter(PointerEventData eventData)
+    {
         if (transform.name != "skip" && transform.name != "exit")
         {
             cardParent = transform.parent;
@@ -150,7 +180,8 @@ public class CardMovement : MonoBehaviour,IPointerClickHandler, IPointerEnterHan
         }
     }
 
-    public void OnPointerExit(PointerEventData eventData) {
+    public void OnPointerExit(PointerEventData eventData)
+    {
         if (transform.name != "skip" && transform.name != "exit")
         {
             Card_data_view c = GameObject.Find("Card_data_view").GetComponent<Card_data_view>();
