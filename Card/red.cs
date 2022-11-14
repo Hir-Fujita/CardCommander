@@ -302,7 +302,6 @@ public class red : MonoBehaviour
                 GameManager.flag = "temp";
                 foreach (Card_process i in p_temp_count)
                 {
-                    Debug.Log(i);
                     i.StartCoroutine(i.Wait_flag());
                 }
                 yield return new WaitUntil(() => GameManager.flag == "wait");
@@ -410,7 +409,6 @@ public class red : MonoBehaviour
             }
         }
     }
-
 
     public IEnumerator red_132(string _user)//炎使い
     {

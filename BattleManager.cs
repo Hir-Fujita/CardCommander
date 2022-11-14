@@ -986,6 +986,7 @@ public class BattleManager : MonoBehaviour
     {
         if (user == "player")
         {
+            field_reset("player");
             atk_var.text = data.model.atk.ToString();
             hp_var.text = data.model.hp.ToString();
             lv_var.text = data.model.cost.ToString();
@@ -1008,6 +1009,7 @@ public class BattleManager : MonoBehaviour
         }
         else if (user == "enemy")
         {
+            field_reset("enemy");
             enemy_atk_var.text = data.model.atk.ToString();
             enemy_hp_var.text = data.model.hp.ToString();
             enemy_lv_var.text = data.model.cost.ToString();

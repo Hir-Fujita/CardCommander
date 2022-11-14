@@ -15,7 +15,10 @@ public class CardMovement : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
         //クリック時の処理
         if (transform.name == "exit")
         {
-            GameManager.instance.Exit();
+            if (GameManager.flag == "wait")
+            {
+                GameManager.instance.Exit();
+            }
         }
         else if (GameManager.turn_flag == 0)
         {
@@ -123,6 +126,38 @@ public class CardMovement : MonoBehaviour, IPointerClickHandler, IPointerEnterHa
                     GameManager.obj = transform.gameObject;
                     GameManager.flag = "wait";
                 }
+            }
+            if (GameManager.flag == "enemy_temp")
+            {
+                if (transform.parent.name == "p2_temp")
+                {
+                    if (GameManager.ONLINE)
+                    {
+                        int num = transform.gameObject.transform.GetSiblingIndex();
+                        GameManager.instance.SendCard(num, "select");
+                    }
+                }
+                GameManager.obj = transform.gameObject;
+                GameManager.flag = "wait";
+            }
+            if (GameManager.flag == "all_temp")
+            {
+                if (GameManager.ONLINE)
+                {
+                    if (transform.parent.name == "p1_temp")
+                    {
+                        int num = transform.gameObject.transform.GetSiblingIndex();
+                        num = num +3;
+                        GameManager.instance.SendCard(num, "select");
+                    }
+                    else if (transform.parent.name == "p2_temp")
+                    {
+                        int num = transform.gameObject.transform.GetSiblingIndex();
+                        GameManager.instance.SendCard(num, "select");
+                    }
+                }
+                GameManager.obj = transform.gameObject;
+                GameManager.flag = "wait";
             }
             if (GameManager.flag == "select")
             {

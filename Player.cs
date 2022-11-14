@@ -77,6 +77,10 @@ public void Draw()
             float x = (canvas_x - hand.Count * card_x) / (hand.Count -1);
             g.spacing = new Vector2(x,0);
         }
+        else
+        {
+            g.spacing = new Vector2(0,0);
+        }
     }
 }
 

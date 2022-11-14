@@ -266,9 +266,174 @@ public class blue : MonoBehaviour
         }
     }
 
+    public IEnumerator blue_227(string _user)//人魚マダム
+    {
+        Player P = Player.GetComponent<Player>();
+        Player E = Enemy.GetComponent<Player>();
+        if (_user == "Player" && P.mp > 0)
+        {
+            P.mp = P.mp - 1;
+            Card_process[] e_temp_count = enemy_temp.GetComponentsInChildren<Card_process>();
+            Card_process[] e_field_count = enemy_field.GetComponentsInChildren<Card_process>();
+            if (e_temp_count.Length != 0 && e_field_count.Length != 0)
+            {
+                GameManager.flag = "enemy_temp";
+                foreach (Card_process i in e_temp_count)
+                {
+                    i.StartCoroutine(i.Wait_flag());
+                }
+                yield return new WaitUntil(() => GameManager.flag == "wait");
+                int num = GameManager.obj.transform.GetSiblingIndex();
+                GameObject card = enemy_field.GetChild(0).gameObject;
+                CardController cc = GameManager.obj.GetComponent<CardController>();
+                cc.gameObject.transform.SetParent(enemy_field);
+                card.transform.SetParent(enemy_temp);
+                card.transform.SetSiblingIndex(num);
+                BattleManager.instance.battle_data("enemy", cc);
+            }
+        }
+        else if (_user == "enemy" && E.mp > 0)
+        {
+            E.mp = E.mp - 1;
+            Card_process[] p_temp_count = player_temp.GetComponentsInChildren<Card_process>();
+            Card_process[] p_field_count = player_field.GetComponentsInChildren<Card_process>();
+            if (p_temp_count.Length != 0 && p_field_count.Length != 0)
+            {
+                if (GameManager.ONLINE)
+                {
+                    GameManager.online_wait = true;
+                    while (GameManager.online_wait)
+                    {
+                        yield return null;
+                    }
+                    GameObject card = player_field.GetChild(0).gameObject;
+                    GameObject card2 = player_temp.GetChild(GameManager.online_num).gameObject;
+                    card2.transform.SetParent(player_field);
+                    card.transform.SetParent(player_temp);
+                    card.transform.SetSiblingIndex(GameManager.online_num);
+                    CardController cc = card2.GetComponent<CardController>();
+                    BattleManager.instance.battle_data("player", cc);
+                }
+                else
+                {
+                    GameObject card = player_field.GetChild(0).gameObject;
+                    GameObject card2 = player_temp.GetChild(0).gameObject;
+                    card2.transform.SetParent(player_field);
+                    card.transform.SetParent(player_temp);
+                    card.transform.SetSiblingIndex(0);
+                    CardController cc = card2.GetComponent<CardController>();
+                    BattleManager.instance.battle_data("player", cc);
+                }
+            }
+        }
+    }
+
     public void blue_229(string _user)//河童
     {
         BattleManager.instance.Initiative_move("move");
+    }
+
+    public IEnumerator blue_245(string _user)//ヤマタノオロチ
+    {
+        Player P = Player.GetComponent<Player>();
+        Player E = Enemy.GetComponent<Player>();
+        Card_process[] p_temp_count = player_temp.GetComponentsInChildren<Card_process>();
+        Card_process[] e_temp_count = enemy_temp.GetComponentsInChildren<Card_process>();
+        if (p_temp_count.Length != 0 || e_temp_count.Length != 0)
+        {
+            if (_user == "Player")
+            {
+                GameManager.flag = "all_temp";
+                foreach (Card_process i in p_temp_count)
+                {
+                    i.StartCoroutine(i.Wait_flag());
+                }
+                foreach (Card_process i in e_temp_count)
+                {
+                    i.StartCoroutine(i.Wait_flag());
+                }
+                yield return new WaitUntil(() => GameManager.flag == "wait");
+                if (GameManager.obj.transform.parent.name == "p1_temp")
+                {
+                    Card_process c = GameManager.obj.GetComponent<Card_process>();
+                    CardController cc = GameManager.obj.GetComponent<CardController>();
+                    yield return c.StartCoroutine(c.Uses());
+                    P.hand.Add(cc.model.cardID);
+                    GameManager.obj.transform.SetParent(Player_hand);
+                    BattleManager.instance.field_reset("player");
+                    P.Stat_update();
+                }
+                else if (GameManager.obj.transform.parent.name == "p2_temp")
+                {
+                    Card_process c = GameManager.obj.GetComponent<Card_process>();
+                    CardController cc = GameManager.obj.GetComponent<CardController>();
+                    yield return c.StartCoroutine(c.Uses());
+                    E.hand.Add(cc.model.cardID);
+                    Destroy(cc.gameObject);
+                    BattleManager.instance.field_reset("enemy");
+                    E.Stat_update();
+                }
+            }
+            else
+            {
+                if (GameManager.ONLINE)
+                {
+                    GameManager.online_wait = true;
+                    while (GameManager.online_wait)
+                    {
+                        yield return null;
+                    }
+                    if (GameManager.online_num < 3)
+                    {
+                        GameObject card = player_temp.GetChild(GameManager.online_num).gameObject;
+                        Card_process c = card.GetComponent<Card_process>();
+                        CardController cc = card.GetComponent<CardController>();
+                        yield return c.StartCoroutine(c.Uses());
+                        P.hand.Add(cc.model.cardID);
+                        card.transform.SetParent(Player_hand);
+                        BattleManager.instance.field_reset("player");
+                        P.Stat_update();
+                    }
+                    else
+                    {
+                        int num = GameManager.online_num - 3;
+                        GameObject card = enemy_temp.GetChild(num).gameObject;
+                        Card_process c = card.GetComponent<Card_process>();
+                        CardController cc = card.GetComponent<CardController>();
+                        yield return c.StartCoroutine(c.Uses());
+                        E.hand.Add(cc.model.cardID);
+                        Destroy(card);
+                        BattleManager.instance.field_reset("enemy");
+                        E.Stat_update();
+                    }
+                }
+                else
+                {
+                    if (p_temp_count.Length != 0)
+                    {
+                        GameObject pp = player_temp.GetChild(0).gameObject;
+                        Card_process c = pp.GetComponent<Card_process>();
+                        CardController cc = pp.GetComponent<CardController>();
+                        yield return c.StartCoroutine(c.Uses());
+                        P.hand.Add(cc.model.cardID);
+                        pp.transform.SetParent(Player_hand);
+                        BattleManager.instance.field_reset("player");
+                        P.Stat_update();
+                    }
+                    else if (e_temp_count.Length != 0)
+                    {
+                        GameObject pp = enemy_temp.GetChild(0).gameObject;
+                        Card_process c = pp.GetComponent<Card_process>();
+                        CardController cc = pp.GetComponent<CardController>();
+                        yield return c.StartCoroutine(c.Uses());
+                        E.hand.Add(cc.model.cardID);
+                        Destroy(cc.gameObject);
+                        BattleManager.instance.field_reset("enemy");
+                        E.Stat_update();
+                    }
+                }
+            }
+        }
     }
 
     public IEnumerator blue_250(string _user)//シーサーペント

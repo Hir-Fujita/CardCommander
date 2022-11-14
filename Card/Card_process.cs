@@ -270,6 +270,8 @@ public class Card_process : MonoBehaviour
                         break;
 
                     case 227://人魚マダム
+                        yield return StartCoroutine(Uses());
+                        yield return blue.instance.StartCoroutine(blue.instance.blue_227(user));
                         break;
 
                     case 229://河童
@@ -278,6 +280,8 @@ public class Card_process : MonoBehaviour
                         break;
 
                     case 245://ヤマタノオロチ
+                        yield return StartCoroutine(Uses());
+                        yield return blue.instance.StartCoroutine(blue.instance.blue_245(user));
                         break;
 
                     case 250://シーサーペント
