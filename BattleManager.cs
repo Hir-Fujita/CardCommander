@@ -35,6 +35,7 @@ public class BattleManager : MonoBehaviour
 
     [SerializeField] public Text player_result_process;
     [SerializeField] public Text enemy_result_process;
+    [SerializeField] public Text skip_button;
 
 
     [SerializeField] GameObject player_ini;
@@ -109,6 +110,7 @@ public class BattleManager : MonoBehaviour
         else if (GameManager.turn_flag == 1)
         {
             Wait_click();
+            skip_button.text = "使用しない";
             //フィールドに出すモンスターを選んだ処理
         }
         else if (GameManager.turn_flag == 2)
@@ -146,15 +148,19 @@ public class BattleManager : MonoBehaviour
         }
         if (GameManager.turn_flag == 0)
         {
+            skip_button.transform.parent.gameObject.SetActive(true);
+            skip_button.text = "戦場に出さない";
             CardController[] field_count = player_field.GetComponentsInChildren<CardController>();
             if (field_count.Length != 0)
             {
                 GameManager.turn_flag = 1;
+                skip_button.text = "使用しない";
             }
             CardController[] temp_count = player_temp.GetComponentsInChildren<CardController>();
             if (temp_count.Length == 0)
             {
                 GameManager.turn_flag = 1;
+                skip_button.text = "使用しない";
             }
             Wait_click();
         }
@@ -276,6 +282,8 @@ public class BattleManager : MonoBehaviour
 
     IEnumerator Battle_system()
     {
+        skip_button.transform.parent.gameObject.SetActive(false);
+        skip_button.text = "";
         GameObject p_use = GameObject.FindWithTag("use");//プレイヤーが使用したカード取得
         GameObject p_battle = GameObject.FindWithTag("battle");
         if (GameManager.ONLINE)
